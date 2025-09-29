@@ -30,12 +30,10 @@
 
 </details>
 
-<br>
-
 <details style="border:1px solid white;padding:2%;border-radius:15px">
     <summary>Corsi del Secondo Anno</summary>
 
-> :warning: *Il periodo di lezioni dei corsi riportati non è ancora stato definito, sarà inserito in seguito.*
+> :warning: *Il periodo di lezione dei corsi riportati non è ancora stato definito, sarà inserito in seguito.*
 
 <details>
     <summary>Advanced Robotics and Automation for Industry and Services</summary>
