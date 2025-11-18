@@ -20,7 +20,7 @@ You can directly contact the admins of the [Robotics and Automation Engineering 
 To mantain a **well managed** repository we adopt *simple* and *unrestrictive* rules. We encorage you to meet this rules since they are easy to follow, so that everybody can make the most of it[^1].
 [^1]: If you accidentally make a mistake that's not a problem, these are just guidelines, anyway you can contact an admin.
 
-### :robot: Commit
+### :robot: Commits
 
 When making a **commit**, try to keep additions/changes related to a single course (make multiple commits if necessary).
 
@@ -120,7 +120,7 @@ In pratica:
 
 ## Credits
 
-[![Contributors](https://contrib.rocks/image?repo=IngegneriaRoboticaEAutomazione/IngegneriaRoboticaEAutomazione&t=1727344800)](https://github.com/IngegneriaRoboticaEAutomazione/IngegneriaRoboticaEAutomazione/graphs/contributors)
+[![Contributors](https://contrib.rocks/image?repo=IngegneriaRoboticaEAutomazione/IngegneriaRoboticaEAutomazione)](https://github.com/IngegneriaRoboticaEAutomazione/IngegneriaRoboticaEAutomazione/graphs/contributors)
 
 Grazie per la collaborazione!
 
