@@ -34,17 +34,17 @@ Sotto sprono di *Alessio de Dato*, ho interrotto la mia gloriosa streak di procr
 
 ### Primo semestre
 
-- `#TdS` — [Teoria dei Sistemi?](https://www.simonecirelli.com/notes/note/TDSC.php)  
+- `#TdS` — [Teoria dei Sistemi](https://www.simonecirelli.com/notes/note/TDSC.php)  
 - `#RTS` — [RTS](https://www.simonecirelli.com/notes/note/RTS.php)  
 - `#CD` — [Controllo Digitale](https://www.simonecirelli.com/notes/note/controllo_digitale.php)  
-- `#MTA` — [Meccanica 1 (MTA)](https://www.simonecirelli.com/notes/note/meccanica1.php)  
+- `#MTA` — [Meccanica 1](https://www.simonecirelli.com/notes/note/meccanica1.php)  
 - `#PPS` — [PPS](https://www.simonecirelli.com/notes/note/pps.php)  
 
 ### Secondo semestre
 
 - `#TdC` — [TdC](https://www.simonecirelli.com/notes/note/TDSC.php)  
 - `#MdR` — [Meccanica dei Robot](https://www.simonecirelli.com/notes/note/meccanica_dei_robot.php)  
-- `#SRA` — [Sensori e Azionamenti (SRA)](https://www.simonecirelli.com/notes/note/sensori.php)  
+- `#SRA` — [Sensori e Azionamenti](https://www.simonecirelli.com/notes/note/sensori.php)  
 - `#CPT` — [CPT](https://www.simonecirelli.com/notes/note/CPT.php)  
 
 ---
@@ -68,7 +68,7 @@ Sotto sprono di *Alessio de Dato*, ho interrotto la mia gloriosa streak di procr
 
 ### Esami opzionali
 
-- `#RC` — [Ricorsione? (RC)](https://www.simonecirelli.com/notes/note/ricop.php)  
+- `#RC` — [Ricerca Operativa](https://www.simonecirelli.com/notes/note/ricop.php)  
 
 ---
 
