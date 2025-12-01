@@ -36,7 +36,7 @@ Sotto sprono di *Alessio de Dato*, ho interrotto la mia gloriosa streak di procr
 
 - `#TdS` — [TdS](https://www.simonecirelli.com/notes/note/TDSC.php)  
 - `#RTS` — [RTS](https://www.simonecirelli.com/notes/note/RTS.php)  
-- `#CD` — [Controllo Digitale](https://www.simonecirelli.com/notes/note/controllo_digitale.php)  
+- `#CDI` — [Controllo Digitale](https://www.simonecirelli.com/notes/note/controllo_digitale.php)  
 - `#MTA` — [Meccanica 1](https://www.simonecirelli.com/notes/note/meccanica1.php)  
 - `#PPS` — [PPS](https://www.simonecirelli.com/notes/note/pps.php)  
 
