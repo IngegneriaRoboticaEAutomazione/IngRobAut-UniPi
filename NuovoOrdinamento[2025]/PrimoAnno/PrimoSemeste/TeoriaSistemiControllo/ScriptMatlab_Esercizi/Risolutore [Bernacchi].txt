@@ -1,0 +1,730 @@
+
+fprintf('--- RISOLUTORE --- \n')
+[A, B, C, D, n, m, l] = inserimentoMatrici();
+
+stampaLista()
+
+eigvalues = eig(A);
+tol = 1e-4;
+
+for k = 1:length(eigvalues)
+    if abs(real(eigvalues(k))) < tol
+        eigvalues(k) = 0 + 1i*imag(eigvalues(k));
+    end
+    if abs(imag(eigvalues(k))) < tol
+        eigvalues(k) = real(eigvalues(k)) + 1i*0;
+    end
+end
+
+
+
+while true
+    
+    command = input('Seleziona un comando: ');
+    switch command
+        case 0
+            fprintf('\n')
+            stampaLista()
+
+
+        case 1
+            fprintf('\n')
+            disp('Gli autovalori della matrice A sono')
+            eigvalues = eig(A)
+            
+            for k = 1:length(eigvalues)
+                re_part = real(eigvalues(k));
+                im_part = imag(eigvalues(k));
+                if abs(re_part) < tol
+                    re_part = 0;
+                end
+                if abs(im_part) < tol
+                    im_part = 0;
+                end
+                eigvalues(k) = re_part + 1i*im_part;
+            end
+            
+            eigvalues_dist = unique(eigvalues);
+            
+            time = input('Digitare 1 se il sistema è a TC, 2 se è a TD: ');
+            while time ~= 1 && time ~= 2
+                time = input('Comando non valido. Digitare 1 se il sistema è a TC, 2 se è a TD: ');
+            end
+            
+            switch time
+                case 1
+                    fprintf('I modi del sistema sono: \n')
+                    printed = [];
+                    J = jordan(A);
+                    J(abs(J) < tol) = 0;
+                    for i = 1:length(eigvalues_dist)
+                        lambda = eigvalues_dist(i);
+                        if any(abs(printed - lambda) < tol)
+                            continue
+                        end
+                        try
+                            Jmax = maxJordanBlock(J, lambda);
+                            dim = size(Jmax,1);
+                        catch
+                            dim = 1;
+                        end
+                        re_part = real(lambda);
+                        im_part = imag(lambda);
+                        if abs(re_part) < tol, re_part = 0; end
+                        if abs(im_part) < tol, im_part = 0; end
+                        if im_part == 0
+                            for j = 1:dim
+                                disp(['t^', num2str(j-1), ' * exp(', num2str(re_part), '*t)'])
+                            end
+                        else
+                            for j = 1:dim
+                                disp(['t^', num2str(j-1), '*exp(', num2str(re_part), '*t)*sin(', num2str(abs(im_part)), '*t)'])
+                                disp(['t^', num2str(j-1), '*exp(', num2str(re_part), '*t)*cos(', num2str(abs(im_part)), '*t)'])
+                            end
+                            printed(end+1) = conj(lambda);
+                        end
+                    end
+            
+                case 2
+                    fprintf('I modi del sistema sono: \n')
+                    printed = [];
+                    J = jordan(A);
+                    J(abs(J) < tol) = 0;
+                    for i = 1:length(eigvalues_dist)
+                        lambda = eigvalues_dist(i);
+                        if any(abs(printed - lambda) < tol)
+                            continue
+                        end
+                        try
+                            Jmax = maxJordanBlock(J, lambda);
+                            dim = size(Jmax,1);
+                        catch
+                            dim = 1;
+                        end
+                        re_part = real(lambda);
+                        im_part = imag(lambda);
+                        if abs(re_part) < tol, re_part = 0; end
+                        if abs(im_part) < tol, im_part = 0; end
+                        if im_part == 0
+                            for j = 1:dim
+                                disp(['k^', num2str(j-1), ' * ', num2str(re_part), '^(k-', num2str(j-1), ')'])
+                            end
+                        else
+                            for j = 1:dim
+                                disp(['k^', num2str(j-1), ' * ', num2str(abs(lambda)), '^(k-', num2str(j-1), ')*sin(', num2str(angle(lambda)), '*k)'])
+                                disp(['k^', num2str(j-1), ' * ', num2str(abs(lambda)), '^(k-', num2str(j-1), ')*cos(', num2str(angle(lambda)), '*k)'])
+                            end
+                            printed(end+1) = conj(lambda);
+                        end
+                    end
+            
+                otherwise
+                    disp('ERRORE')
+            end
+
+
+        case 2
+            fprintf('\n')
+            disp('La matrice in forma di Jordan è')
+            A_jordan = jordan(A)
+
+            disp('')
+            disp('Desideri verificare, fornando tu una matrice T, che il risultato sia corretto?')
+            answer = input('Digitare 1 per sì, o qualsisasi altro tasto per no: ');
+
+            if answer == 1
+                T_J = input('Inserire la matrice nel formato [t11 ... t1n ; ... ]: ');
+                disp('La matrice ottenuta è')
+                A_jordan = T_J^-1*A*T_J
+            end
+
+
+        case 3
+            fprintf('\n')
+            time = input('Digitare 1 se il sistema è a TC, 2 se è a TD: ');
+
+            while time ~= 1 && time ~= 2
+                time = input('Comando non valido. Digitare 1 se il sistema è a TC, 2 se è a TD: ');
+            end
+    
+            switch time 
+                case 1
+                    disp('-- Studio Raggiungibilità in TC --')
+                    disp('La matrice di raggiungibilità è:')
+                    Ragg = ctrb(A,B)
+                    disp('Lo spazio di raggiungibilità è descritto da')
+                    [Rred, pivcol] = rref(Ragg);
+                    Ragg_space = Ragg(:, pivcol)
+                
+                case 2
+                    disp('-- Studio Raggiungibilità in TD --')
+                    prev_Ragg_space = zeros(size(B,1), size(B,2));
+                    for i = 1:n
+                        fprintf('La matrice di raggiungibilità al passo %d è:\n', i);
+                        if i == 1
+                            Ragg = B 
+                        else
+                            Ragg = [Ragg A^(i-1)*B]
+                        end
+                        [Rred, pivcol] = rref(Ragg);
+                        Ragg_space = Ragg(:, pivcol);
+                        if rank(prev_Ragg_space) == rank(Ragg_space)
+                            fprintf('Mi fermo, poiché spazio di raggiungibilità al passo %d è uguale a quello al passo precedente: \n', i)
+                            break
+                        else
+                            fprintf('Lo spazio di raggiungibilità al passo %d è descritto da: \n', i)
+                            Ragg_space
+                            prev_Ragg_space = Ragg_space;
+                        end
+                    end
+    
+                otherwise
+                    disp('ERRORE')
+            end
+    
+            r = rank(Ragg);
+            fprintf('Il rango della matrice è: %d \n', r)
+     
+            if r == n
+                disp('--> Il sistema è completamente raggiungibile')
+            elseif r < n
+                disp('--> Il sistema NON è completamente raggiungibile')
+            else
+                disp('ERRORE')
+            end
+
+
+        case 4
+            fprintf('\n')
+            time = input('Digitare 1 se il sistema è a TC, 2 se è a TD: ');
+
+            while time ~= 1 && time ~= 2
+                time = input('Comando non valido. Digitare 1 se il sistema è a TC, 2 se è a TD: ');
+            end
+    
+            switch time 
+                case 1
+                    disp('-- Studio Osservabilità in TC --')
+                    disp('La matrice di osservabilità è:')
+                    Obs = obsv(A,C)
+                    disp('Lo spazio di NON osservabilità è descritto da')
+                    No_Obs_space = null(Obs, 'r')
+                
+                case 2
+                    disp('-- Studio Osservabilità in TD --')
+                    prev_No_Obs_space = zeros(size(C,1), size(C,2));
+                    for i = 1:n
+                        fprintf('La matrice di osservabilità al passo %d è:\n', i);
+                        if i == 1
+                            Obs = C 
+                        else
+                            Obs = [Obs; C*A^(i-1)]
+                        end
+                    No_Obs_space = null(Obs, 'r');
+                    if rank(prev_No_Obs_space) == rank(No_Obs_space)
+                            fprintf('Mi fermo, poiché spazio di non osservabilità al passo %d è uguale a quello al passo precedente: \n', i)
+                            break
+                        else
+                            fprintf('Lo spazio di non Osservabilità al passo %d è descritto da: \n', i)
+                            No_Obs_space
+                            prev_No_Obs_space = No_Obs_space;
+                        end
+                    end
+    
+                otherwise
+                    disp('ERRORE')
+            end
+            
+            o = rank(Obs);
+            fprintf('Il rango della matrice è: %d \n', o)
+             
+            if o == n
+                disp('--> Il sistema è completamente osservabile')
+            elseif o < n
+                disp('--> Il sistema NON è completamente osservabile')
+            else
+                disp('ERRORE')
+            end
+
+        
+        case 5
+            fprintf('\n')
+            disp('-- Lemma PBH per la raggiungibilità --')
+            for i=1:length(eigvalues)
+                ok = true;
+                for k=1:i-1
+                    if eigvalues(i) == eigvalues(k)
+                        ok = false;
+                    end
+                end
+                if ok
+                    lambda = eigvalues(i);
+                    ma = 0;
+                    for k=1:length(eigvalues)
+                        if abs(lambda - eigvalues(k)) < tol
+                            ma = ma + 1;
+                        end
+                    end
+                    fprintf('PBH per lambda = %d\n', lambda)
+                    PBH_Ragg = [lambda*eye(n,n)-A B]
+                    r_pbh_ragg = rank(PBH_Ragg);
+                    if r_pbh_ragg == n
+                        fprintf('--> Autovalore in %d è raggiungibile\n', lambda)
+                    else
+                        if ma == 1
+                            fprintf('--> Autovalore in %d NON è raggiungibile\n', lambda)
+                        else
+                            fprintf('--> Almeno un autovalore in %d NON è raggiungibile\n', lambda)
+                        end
+                    end
+                end
+            end
+
+
+        case 6
+            fprintf('\n')
+            disp('-- Lemma PBH per osservabilità --')
+            for i=1:length(eigvalues)
+                ok = true;
+                for k=1:i-1
+                    if eigvalues(i) == eigvalues(k)
+                        ok = false;
+                    end
+                end
+                if ok
+                    lambda = eigvalues(i);
+                    ma = 0;
+                    for k=1:length(eigvalues)
+                        if abs(lambda - eigvalues(k)) < tol
+                            ma = ma + 1;
+                        end
+                    end
+                    fprintf('PBH per lambda = %d\n', lambda)
+                    PBH_Obs = [lambda*eye(n,n)-A; C]
+                    r_pbh_obs = rank(PBH_Obs);
+                    if r_pbh_obs == n
+                        fprintf('--> Autovalore in %d è osservabile\n', lambda)
+                    else
+                        if ma == 1
+                            fprintf('--> Autovalore in %d NON è osservabile\n', lambda)
+                        else
+                            fprintf('--> Almeno un autovalore in %d NON è osservabile\n', lambda)
+                        end
+                    end
+                end
+            end
+
+
+        case 7
+            fprintf('\n')
+            Ragg = ctrb(A,B);
+            [Rred, pivcol] = rref(Ragg);
+            Ragg_space = Ragg(:, pivcol);
+            NO_Ragg_space = null(Ragg_space', 'r');
+            disp('La matrice di trasferimento per la forma standard di raggiungibilità è')
+            Transfer_ragg = [Ragg_space NO_Ragg_space]
+            disp('La forma standard di raggiungibilità del sistema è')
+            A_ragg = inv(Transfer_ragg) * A * Transfer_ragg
+            B_ragg = inv(Transfer_ragg) * B
+            C_ragg = C * Transfer_ragg
+            D_ragg = D
+            fprintf('Il numero di autovalori raggiungibili è %d\n', size(Ragg_space,2))
+            
+            if ~isempty(Ragg_space)
+                dimR = size(Ragg_space,2);   
+                A_noR = A_ragg(dimR+1:n, dimR+1:n);
+            else
+                A_noR = A_ragg;
+            end
+
+            eig_noR = eig(A_noR);
+            stabilizzabile = true;
+            time = input('Digitare 1 se il sistema è a TC, 2 se è a TD: ');
+            while time ~= 1 && time ~= 2
+                time = input('Comando non valido. Digitare 1 se il sistema è a TC, 2 se è a TD: ');
+            end
+            switch time
+                    case 1
+                        for i = 1:length(eig_noR)
+                            if abs(real(eig_noR(i))) >= tol
+                                stabilizzabile = false;
+                            end
+                        end
+                            
+                    case 2
+                        for i = 1:length(eig_noR)
+                            if abs(real(eig_noR(i)) - 1) >= tol
+                                stabilizzabile = false;
+                            end 
+                        end
+        
+                    otherwise
+                        fprintf('ERRORE \n');
+                end
+                
+            if rank(Ragg) == n
+                fprintf('--> Il sistema è completamente raggiungibile \n')
+            else
+                fprintf('--> Il sistema NON è completamente raggiungibile \n')
+            end
+
+            if stabilizzabile
+                fprintf('--> Il sistema è stabilizzabile \n')
+            else
+                fprintf('--> Il sistema NON è stabilizzabile \n')
+            end
+
+
+        case 8
+            fprintf('\n')
+            Obs = obsv(A,C);
+            No_Obs_space = null(Obs, 'r');
+            Obs_space = null(No_Obs_space', 'r');
+            disp('La matrice di trasferimento per la forma standard di osservabilità è')
+            Transfer_Obs = [Obs_space No_Obs_space]
+            disp('La forma standard di osservabilità del sistema è')
+            A_obs = inv(Transfer_Obs) * A * Transfer_Obs
+            B_obs = inv(Transfer_Obs) * B
+            C_obs = C * Transfer_Obs
+            D_obs = D
+            fprintf('--> Il numero di autovalori osservabili è %d\n', size(Obs_space,2))
+
+
+            if rank(Obs) == n
+                fprintf('--> Il sistema è completamente osservabile \n')
+            else
+                fprintf('--> Il sistema NON è completamente osservabile \n')
+            end
+
+
+        case 9
+        fprintf('\n')
+
+        Ragg = ctrb(A,B);
+        Obs = obsv(A,C);
+    
+        [~, pivcol] = rref(Ragg);
+        Ragg_space = Ragg(:,pivcol);
+    
+        No_Obs_space = null(Obs,'r');
+    
+        P1 = Ragg_space * ((Ragg_space' * Ragg_space) \ Ragg_space');
+        common = [];
+        for j = 1:size(No_Obs_space,2)
+            v = No_Obs_space(:,j);
+            if norm(P1*v - v) < tol
+                common = [common v];
+            end
+        end
+        T_R_noO = common;
+    
+        Full_basis = [T_R_noO Ragg_space];
+        [~, pivcol] = rref(Full_basis);
+        Full_basis = Full_basis(:,pivcol);
+        n_noO = size(T_R_noO,2);
+        T_R_O = Full_basis(:,n_noO+1:end);
+    
+        Full_basis = [T_R_noO No_Obs_space];
+        [~, pivcol] = rref(Full_basis);
+        Full_basis = Full_basis(:,pivcol);
+        n_noO = size(T_R_noO,2);
+        T_noR_noO = Full_basis(:,n_noO+1:end);
+    
+        T_partial = [T_R_O T_R_noO T_noR_noO];
+        Full_basis = [T_partial eye(n)];
+        [~, pivcol] = rref(Full_basis);
+        Full_basis = Full_basis(:,pivcol);
+        n_partial = size(T_partial,2);
+        T_noR_O = Full_basis(:,n_partial+1:end);
+    
+        T_Kalman = [T_R_O T_R_noO T_noR_O T_noR_noO];
+        [~, pivcol] = rref(T_Kalman);
+        T_Kalman = T_Kalman(:,pivcol);
+    
+        disp('La matrice per il cambio di base è')
+        T_Kalman
+        disp('La forma di Kalman del sistema è')
+        A_kal = T_Kalman \ (A * T_Kalman)
+        B_kal = T_Kalman \ B
+        C_kal = C * T_Kalman
+        D_kal = D
+    
+        fprintf('Il numero di autovalori raggiungibili e osservabili è %d\n', size(T_R_O,2))
+        fprintf('Il numero di autovalori raggiungibili ma NON osservabili è %d\n', size(T_R_noO,2))
+        fprintf('Il numero di autovalori NON raggiungibili ma osservabili è %d\n', size(T_noR_O,2))
+        fprintf('Il numero di autovalori NON raggiungibili e NON osservabili è %d\n', size(T_noR_noO,2))
+
+        disp('')
+        disp('Desideri verificare, fornando tu una matrice T, che il risultato sia corretto?')
+            answer = input('Digitare 1 per sì, o qualsisasi altro tasto per no: ');
+
+            if answer == 1
+                T = input('Inserire la matrice nel formato [t11 ... t1n ; ... ]: ');
+                disp('La matrice ottenuta è')
+                A_k = T^-1*A*T
+            end
+    
+        bibo = input('Desideri sapere se il sistema è BIBO stabile? sì:1\n');
+        if bibo == 1
+            time = input('Digitare 1 se il sistema è a TC, 2 se è a TD: ');
+            while time ~= 1 && time ~= 2
+                time = input('Comando non valido. Digitare 1 se il sistema è a TC, 2 se è a TD: ');
+            end
+        
+            if ~isempty(T_R_O)
+                fprintf('Il sistema in forma minima è:\n')
+                A_min = A_kal(1:size(T_R_O,2), 1:size(T_R_O,2))
+                B_min = B_kal(1:size(T_R_O,2), 1:m)
+                C_min = C_kal(1:l , 1:size(T_R_O,2))
+                eig_min = eig(A_min);
+                bibo_stabile = true;
+        
+                switch time
+                    case 1
+                        for i = 1:length(eig_min)
+                            if imag(eig_min(i)) ~= 0
+                                bibo_stabile = false;
+                            end
+                            if real(eig_min(i)) >= 0
+                                bibo_stabile = false;
+                            end
+                        end
+        
+                    case 2
+                        for i = 1:length(eig_min)
+                            if imag(eig_min(i)) ~= 0
+                                bibo_stabile = false;
+                            end
+                            if abs(real(eig_min(i))) >= 1 - tol
+                                bibo_stabile = false;
+                            end
+                        end
+        
+                    otherwise
+                        fprintf('ERRORE \n');
+                end
+        
+                if bibo_stabile
+                    fprintf('--> Il sistema é BIBO stabile \n')
+                else
+                    fprintf('--> Il sistema NON é BIBO stabile \n')
+                end
+            else
+                fprintf('--> Il sistema non presenta autovalori raggiungibili e osservabili \n')
+                fprintf('Ogni ingresso genera come uscita identicamente 0, dunqueè BIBO stabile \n')
+            end
+        end
+
+        
+        case 10
+            fprintf('\n')
+            x0 = input('Inserire il vettore nel formato [a11 ... a1m ; ... ]: ');
+            while size(x0,1)~=n
+                x0 = input('Dimensione errata, inserire nuovamente il vettore: ');
+            end
+            if size(x0,1) == n
+                S_x0 = [x0];
+                for i=1:(n-1)
+                    r1 = rank(S_x0);
+                    r2 = rank([S_x0 A^i*x0]);
+                    if r2 > r1
+                        S_x0 = [S_x0 A^i*x0];
+                    end
+                end
+                disp('Il sotto spazio ciclico generato dal vettore inserito è descritto da')
+                S_x0
+            else
+                disp('Dimensione inserita non valida')
+            end
+            
+
+        case 11
+            fprintf('\n')
+            x0 = input('Inserire il vettore nel formato [a11 ... a1m ; ... ]: ');
+            while size(x0,1)~=n
+                x0 = input('Dimensione errata, inserire nuovamente il vettore: ');
+            end
+            Obs = obsv(A,C);
+            No_Obs_space = null(Obs,'r');
+            alpha = sym('alpha', [size(No_Obs_space,2) 1]);
+            x = x0 + No_Obs_space * alpha;
+            disp(x)
+
+
+        case 12
+            fprintf('\n')
+            sistema = ss(A,B,C,D);
+            disp('La funzione di trasferimento del sistema è:')
+            Transfer_funtion = tf(sistema)
+
+
+        case 13
+            fprintf('\n')
+
+            ctrb_matrix = ctrb(A,B);
+            if rank(ctrb_matrix) < n
+                disp('Il sistema non è completamente controllabile: non puoi assegnare tutti gli autovalori.')
+                fprintf('Nota bene: se si tratta di TD il sistema potrebbe essere controllabile, pur non essendo raggiungibile \n')
+            else
+                valid = false;
+                while ~valid
+                    new_eig = input('Inserire i nuovi autovalori da assegnare in ciclo chiuso nella forma [a b c ...]: ');
+                    while size(new_eig,2) ~= n || size(new_eig,1) ~= 1
+                        new_eig = input('Vettore non valido, inserire nuovamente: ');
+                    end
+
+                    eig_unique = unique(new_eig);
+                    valid = true;
+        
+                    for k = 1:length(eig_unique)
+                        multiplicity = sum(abs(new_eig - eig_unique(k)) < tol);
+                        if multiplicity > m
+                            fprintf('Errore: l''autovalore %s ha molteplicità %d, maggiore del rango di B (%d).\n', ...
+                                    num2str(eig_unique(k)), multiplicity, m);
+                            valid = false;
+                        end
+                    end
+        
+                    if ~valid
+                        disp('Reinserire il vettore di autovalori rispettando la condizione di molteplicità.')
+                    end
+                end
+        
+                fprintf('La matrice K cercata è\n');
+                K = place(A, B, new_eig)
+            end
+
+
+        case 14
+            [A, B, C, D, n, m, l] = inserimentoMatrici ();
+            eigvalues = eig(A);
+
+
+        case 99
+            disp('Il programma viene terminato')
+            break
+
+
+        otherwise
+            disp('ERRORE, inserire nuovamente un comando valido')
+    end
+
+end
+               
+
+function [A, B, C, D, n, m, l] = inserimentoMatrici ()
+    A = input('Inserire la matrice A nel formato [a11 ... a1n ; ... ]: ');
+    n = size(A,1);
+    
+    B = input('Inserire la matrice B nel formato [a11 ... a1m ; ... ]: ');
+    while size(B,1) ~= n
+        disp('Errore: il numero di righe di B deve essere uguale a quello di A.');
+        scelta = -1;
+        while scelta ~= 1 && scelta ~= 2
+            scelta = input('Vuoi reinserire A (digita 1) o B (digita 2)? ');
+            if scelta ~= 1 && scelta ~= 2
+                disp('Scelta non valida. Inserire 1 oppure 2.');
+            end
+        end
+        if scelta == 1
+            A = input('Reinserire la matrice A: ');
+            n = size(A,1);
+        else
+            B = input('Reinserire la matrice B: ');
+        end
+    end
+    m = size(B,2);
+    
+    C = input('Inserire la matrice C nel formato [a11 ... a1n ; ... ]: ');
+    while size(C,2) ~= n
+        disp('Errore: il numero di colonne di C deve essere uguale al numero di colonne di A.');
+        scelta = -1;
+        while scelta ~= 1 && scelta ~= 2
+            scelta = input('Vuoi reinserire A (digita 1) o C (digita 2)? ');
+            if scelta ~= 1 && scelta ~= 2
+                disp('Scelta non valida. Inserire 1 oppure 2.');
+            end
+        end
+        if scelta == 1
+            A = input('Reinserire la matrice A: ');
+            n = size(A,1);
+        else
+            C = input('Reinserire la matrice C: ');
+        end
+    end
+    l = size(C,1);
+    
+    D = input('Inserire la matrice D nel formato [a11 ... a1m ; ... ]: ');
+    while size(D,1) ~= l || size(D,2) ~= m
+        disp('Errore: D deve avere lo stesso numero di righe di C e lo stesso numero di colonne di B.');
+        scelta = -1;
+        while scelta ~= 1 && scelta ~= 2 && scelta ~= 3
+            scelta = input('Vuoi reinserire B (digita 1), C (digita 2) o D (digita 3)? ');
+            if scelta ~= 1 && scelta ~= 2 && scelta ~= 3
+                disp('Scelta non valida. Inserire 1, 2 oppure 3.');
+            end
+        end
+        if scelta == 1
+            B = input('Reinserire la matrice B: ');
+            m = size(B,2);
+        elseif scelta == 2
+            C = input('Reinserire la matrice C: ');
+            l = size(C,1);
+        else
+            D = input('Reinserire la matrice D: ');
+        end
+    end
+end
+
+function stampaLista()
+    disp('--- Lista comandi ---')
+    disp('0: Stampa lista dei comandi')
+    disp('1: Trova autovalori e modi')
+    disp('2: Porta A in forma di Jordan')
+    disp('3: Studia Raggiungibilità')
+    disp('4: Studia Osservabilità')
+    disp('5: Lemma PBH per la raggiungibilità')
+    disp('6: Lemma PBH per osservabilità')
+    disp('7: Porta il sistema in forma standard di raggiungibilità (stabilizzabilità)')
+    disp('8: Porta il sistema in forma standard di osservabilità')
+    disp('9: Porta il sistema in forma di Kalman e studia stabilità BIBO')
+    disp('10: Trova lo spazio in cui vivrà la evoluzione libera, dato un certo ingresso')
+    disp('11: Trova gli stati indistinguibili rispetto ad uno fornito')
+    disp('12: Calcola la funzione di trasferimento del sistema')
+    disp('13: Determinare la matrice K per il posizionamento di autovalori')
+    disp('14: Cambiare le matrici del sistema')
+    disp('99: Termina il programma')
+end 
+
+
+function Jmax = maxJordanBlock(J, lambda)
+    n = size(J,1);
+    smax = 0;
+    idxStart = [];
+    idxEnd = [];
+
+    i = 1;
+    while i <= n
+        if abs(J(i,i) - lambda) < 1e-4
+            j = i;
+            while j < n && abs(J(j+1,j+1) - lambda) < 1e-4 && abs(J(j,j+1) - 1) < 1e-4
+                j = j + 1;
+            end
+            s = j - i + 1;
+            if s > smax
+                smax = s;
+                idxStart = i;
+                idxEnd = j;
+            end
+            i = j + 1;
+        else
+            i = i + 1;
+        end
+    end
+
+    if isempty(idxStart)
+        error('Nessun blocco di Jordan per lambda trovato nella matrice fornita.');
+    end
+
+    Jmax = J(idxStart:idxEnd, idxStart:idxEnd);
+end
