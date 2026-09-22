@@ -253,6 +253,11 @@ Forms dedito alla Raccolta dei quesiti d'esame, tutti i dati raccolti nel tempo,
 
 <!-- AUTO:nuovo|2|na|identificazione-stima-e-controllo-robusto -->
 
+- **Docente:** prof Costanzi — **Appello:** 2026-07-17 — **Inserito il:** 2026-07-22
+  - ingressi persistentemente eccitanti
+  - stima MMSE-> stimatore BLUE e approfondire nel caso di modello lineare
+
+
 - **Docente:** Prof. Costanzi — **Appello:** Sessione Estiva — **Inserito il:** 2026-07-17
   - Montecarlo
   - Parlare di identificabilità e ingressi persistentemente eccitanti
